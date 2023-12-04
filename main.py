@@ -2,6 +2,7 @@ import ctypes
 import os
 import sys
 import time
+import tkinter as tk
 
 # Define a structure for the last input info (for Windows)
 class LASTINPUTINFO(ctypes.Structure):
@@ -22,6 +23,23 @@ def format_time(seconds):
     mins, secs = divmod(int(seconds), 60)
     return f"{mins} minutes, {secs} seconds"
 
+def update_countdown(label, start_time, wait_time, root):
+    current_idle_time = get_idle_time()
+    elapsed_time = time.time() - start_time
+    remaining_time = max(wait_time - elapsed_time, 0)
+
+    if current_idle_time < 2:  # Reset timer if there's user activity
+        start_time = time.time()
+
+    formatted_time = format_time(remaining_time)
+    label.config(text=f"Time remaining until shutdown: {formatted_time}.")
+
+    if remaining_time <= 0:
+        root.quit()  # Exit the Tkinter mainloop
+        shutdown()
+    else:
+        root.after(1000, update_countdown, label, start_time, wait_time, root)  # Update every second
+
 def main():
     input_time = input("Enter time to wait before shutdown (e.g., 60m for 60 minutes, 2h for 2 hours): ")
     try:
@@ -36,28 +54,16 @@ def main():
         print("Invalid number.")
         sys.exit(1)
 
-    print(f"System will shutdown after {input_time} of idle time if no activity is detected.")
     start_time = time.time()
+    root = tk.Tk()
+    root.title("Shutdown Timer")
+    label = tk.Label(root, text="", padx=20, pady=20)
+    label.pack()
 
-    while True:
-        current_idle_time = get_idle_time()
+    # Initialize countdown update
+    update_countdown(label, start_time, wait_time, root)
 
-        # If there is user activity, reset the start_time
-        if current_idle_time < 2:  # Using 2 seconds to allow for small delays in detection
-            start_time = time.time()
-
-        elapsed_time = time.time() - start_time
-        remaining_time = max(wait_time - elapsed_time, 0)
-
-        formatted_time = format_time(remaining_time)
-        print(f"Time remaining until shutdown: {formatted_time}.")
-        #print(f"Current idle time: {format_time(current_idle_time)}.")
-
-        if remaining_time <= 0:
-            shutdown()
-            break
-
-        time.sleep(1)  # Check every second
+    root.mainloop()
 
 if __name__ == "__main__":
     main()
