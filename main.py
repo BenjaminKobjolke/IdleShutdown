@@ -4,6 +4,7 @@ import sys
 import time
 import tkinter as tk
 import argparse
+import subprocess
 
 # Define a structure for the last input info (for Windows)
 class LASTINPUTINFO(ctypes.Structure):
@@ -60,6 +61,10 @@ def main():
     args = parser.parse_args()
 
     if args.time:
+        # Relaunch using pythonw.exe if not already running with it
+        if 'pythonw.exe' not in sys.executable:
+            subprocess.Popen(['pythonw.exe', __file__, args.time])
+            sys.exit(0)
         wait_time = parse_time(args.time)
     else:
         input_time = input("Enter time to wait before shutdown (e.g., 60m for 60 minutes, 2h for 2 hours): ")
