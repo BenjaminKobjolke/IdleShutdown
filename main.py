@@ -56,10 +56,14 @@ def parse_time(input_time):
 
 def main():
     parser = argparse.ArgumentParser(description="Shutdown timer script.")
-    parser.add_argument('time', help="Time to wait before shutdown (e.g., 60m for 60 minutes, 2h for 2 hours)")
+    parser.add_argument('time', nargs='?', help="Time to wait before shutdown (e.g., 60m for 60 minutes, 2h for 2 hours)")
     args = parser.parse_args()
 
-    wait_time = parse_time(args.time)
+    if args.time:
+        wait_time = parse_time(args.time)
+    else:
+        input_time = input("Enter time to wait before shutdown (e.g., 60m for 60 minutes, 2h for 2 hours): ")
+        wait_time = parse_time(input_time)
 
     start_time = time.time()
     root = tk.Tk()
