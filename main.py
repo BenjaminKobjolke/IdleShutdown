@@ -3,6 +3,7 @@ import os
 import sys
 import time
 import tkinter as tk
+import argparse
 
 # Define a structure for the last input info (for Windows)
 class LASTINPUTINFO(ctypes.Structure):
@@ -40,19 +41,25 @@ def update_countdown(label, start_time, wait_time, root):
     else:
         root.after(1000, update_countdown, label, start_time, wait_time, root)  # Update every second
 
-def main():
-    input_time = input("Enter time to wait before shutdown (e.g., 60m for 60 minutes, 2h for 2 hours): ")
+def parse_time(input_time):
     try:
         if input_time.endswith('m'):
-            wait_time = int(input_time[:-1]) * 60
+            return int(input_time[:-1]) * 60
         elif input_time.endswith('h'):
-            wait_time = int(input_time[:-1]) * 3600
+            return int(input_time[:-1]) * 3600
         else:
             print("Invalid input format. Use 'm' for minutes or 'h' for hours.")
             sys.exit(1)
     except ValueError:
         print("Invalid number.")
         sys.exit(1)
+
+def main():
+    parser = argparse.ArgumentParser(description="Shutdown timer script.")
+    parser.add_argument('time', help="Time to wait before shutdown (e.g., 60m for 60 minutes, 2h for 2 hours)")
+    args = parser.parse_args()
+
+    wait_time = parse_time(args.time)
 
     start_time = time.time()
     root = tk.Tk()
