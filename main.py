@@ -33,6 +33,13 @@ def update_countdown(label, start_time, wait_time, root):
     if current_idle_time < 2:  # Reset timer if there's user activity
         start_time = time.time()
 
+    if remaining_time > 60:
+        title = f"{int(remaining_time // 60)}m until shutdown"
+    else:
+        title = f"{int(remaining_time)}s until shutdown"
+
+    root.title(title)
+
     formatted_time = format_time(remaining_time)
     label.config(text=f"Time remaining until shutdown: {formatted_time}.")
 
@@ -72,9 +79,16 @@ def main():
 
     start_time = time.time()
     root = tk.Tk()
-    root.title("Shutdown Timer")
+    root.withdraw()  # Hide the root window initially
+
     label = tk.Label(root, text="", padx=20, pady=20)
     label.pack()
+
+    def show_window():
+        root.deiconify()  # Show the root window
+        root.state('iconic')  # Start minimized
+
+    root.after(0, show_window)  # Show and minimize the window
 
     # Initialize countdown update
     update_countdown(label, start_time, wait_time, root)
