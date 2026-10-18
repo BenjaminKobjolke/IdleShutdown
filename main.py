@@ -1,15 +1,17 @@
+import argparse
 import ctypes
 import os
+import subprocess
 import sys
 import time
 import tkinter as tk
-import argparse
-import subprocess
+from pathlib import Path
+
 
 # Define a structure for the last input info (for Windows)
 class LASTINPUTINFO(ctypes.Structure):
-    _fields_ = [("cbSize", ctypes.c_uint),
-                ("dwTime", ctypes.c_uint)]
+    _fields_ = [("cbSize", ctypes.c_uint), ("dwTime", ctypes.c_uint)]
+
 
 def get_idle_time():
     lii = LASTINPUTINFO()
@@ -18,12 +20,15 @@ def get_idle_time():
     millis = ctypes.windll.kernel32.GetTickCount() - lii.dwTime
     return millis / 1000.0  # Convert milliseconds to seconds
 
+
 def shutdown():
     os.system("shutdown /s /f /t 0")
+
 
 def format_time(seconds):
     mins, secs = divmod(int(seconds), 60)
     return f"{mins} minutes, {secs} seconds"
+
 
 def update_countdown(label, start_time, wait_time, root):
     current_idle_time = get_idle_time()
@@ -47,13 +52,16 @@ def update_countdown(label, start_time, wait_time, root):
         root.quit()  # Exit the Tkinter mainloop
         shutdown()
     else:
-        root.after(1000, update_countdown, label, start_time, wait_time, root)  # Update every second
+        root.after(
+            1000, update_countdown, label, start_time, wait_time, root
+        )  # Update every second
+
 
 def parse_time(input_time):
     try:
-        if input_time.endswith('m'):
+        if input_time.endswith("m"):
             return int(input_time[:-1]) * 60
-        elif input_time.endswith('h'):
+        elif input_time.endswith("h"):
             return int(input_time[:-1]) * 3600
         else:
             print("Invalid input format. Use 'm' for minutes or 'h' for hours.")
@@ -62,19 +70,32 @@ def parse_time(input_time):
         print("Invalid number.")
         sys.exit(1)
 
+
 def main():
     parser = argparse.ArgumentParser(description="Shutdown timer script.")
-    parser.add_argument('time', nargs='?', help="Time to wait before shutdown (e.g., 60m for 60 minutes, 2h for 2 hours)")
+    parser.add_argument(
+        "time",
+        nargs="?",
+        help="Time to wait before shutdown (e.g., 60m for 60 minutes, 2h for 2 hours)",
+    )
     args = parser.parse_args()
 
     if args.time:
         # Relaunch using pythonw.exe if not already running with it
-        if 'pythonw.exe' not in sys.executable:
-            subprocess.Popen(['pythonw.exe', __file__, args.time])
+        if "pythonw.exe" not in sys.executable:
+            subprocess.Popen(
+                [
+                    str(Path(sys.executable).with_name("pythonw.exe")),
+                    __file__,
+                    args.time,
+                ]
+            )
             sys.exit(0)
         wait_time = parse_time(args.time)
     else:
-        input_time = input("Enter time to wait before shutdown (e.g., 60m for 60 minutes, 2h for 2 hours): ")
+        input_time = input(
+            "Enter time to wait before shutdown (e.g., 60m for 60 minutes, 2h for 2 hours): "
+        )
         wait_time = parse_time(input_time)
 
     start_time = time.time()
@@ -86,7 +107,7 @@ def main():
 
     def show_window():
         root.deiconify()  # Show the root window
-        root.state('iconic')  # Start minimized
+        root.state("iconic")  # Start minimized
 
     root.after(0, show_window)  # Show and minimize the window
 
@@ -94,6 +115,7 @@ def main():
     update_countdown(label, start_time, wait_time, root)
 
     root.mainloop()
+
 
 if __name__ == "__main__":
     main()
