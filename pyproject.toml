@@ -1,0 +1,17 @@
+[project]
+name = "idle-shutdown"
+version = "0.1.0"
+description = "Shutdown after a set amount of minutes or hours of idle time"
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+dependencies = []
+
+[dependency-groups]
+dev = ["ruff", "mypy", "pytest"]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
