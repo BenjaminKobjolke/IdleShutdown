@@ -44,18 +44,20 @@ start.bat 90m    # Shutdown after 90 minutes
 
 With a command line argument, the script relaunches with the `pythonw.exe` next to the current interpreter, so it uses the uv environment's Python rather than a system Python on PATH.
 
-### Interactive Mode
+### Default Duration
 
-Run without arguments to enter interactive mode:
+The first time you run without arguments, a window asks how long the computer should be idle:
 
 ```bash
 start.bat
 ```
 
-You'll be prompted to enter the time:
-```
-Enter time to wait before shutdown (e.g., 60m for 60 minutes, 2h for 2 hours):
-```
+After you enter a duration, IdleShutdown saves it as the default and starts the countdown. Later
+starts without arguments use that saved duration immediately. Use the countdown window's
+**Change duration** button to choose and save a different default.
+
+The saved duration is stored in `settings.json` next to `main.py`. A time passed on the command line,
+such as `start.bat 30m`, overrides the default for that run without changing the saved value.
 
 ## Tests
 
@@ -75,4 +77,4 @@ Double-click `update.bat` to update the locked dependencies, sync the environmen
 - **Window Title Updates**: Shows countdown in the window title (minutes when >60s, seconds otherwise)
 - **Idle Time Monitoring**: Resets the timer if user activity is detected (idle time < 2 seconds)
 - **Forced Shutdown**: Uses Windows shutdown command with force flag (`shutdown /s /f /t 0`)
-- **Hidden Console**: When launched with command line arguments, runs without showing a console window
+- **Hidden Console**: Starts without a console window, both with and without a command line argument
