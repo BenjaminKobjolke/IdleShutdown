@@ -1,0 +1,22 @@
+{
+  "files": {
+    "TICKETS_WATCHER_COMMANDS.md": 2
+  },
+  "command_check_scripts": [
+    "run_tests.bat"
+  ],
+  "analysis_commands": [
+    "tools\\run_tests.bat"
+  ],
+  "analysis_commands_seen": {
+    "scripts": [
+      "run_tests.bat"
+    ],
+    "tests": true
+  },
+  "analysis_command_states": {
+    "tools\\run_tests.bat": {
+      "test": "green"
+    }
+  }
+}
