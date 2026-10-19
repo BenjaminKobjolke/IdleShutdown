@@ -7,7 +7,7 @@ requires-python = ">=3.11,<3.13"
 dependencies = []
 
 [dependency-groups]
-dev = ["ruff", "mypy", "pytest"]
+dev = ["ruff", "mypy", "pytest", "pytest-timeout"]
 
 [tool.uv]
 package = false
@@ -15,3 +15,4 @@ package = false
 [tool.pytest.ini_options]
 pythonpath = ["."]
 testpaths = ["tests"]
+timeout = 120
