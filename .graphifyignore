@@ -1,0 +1,14 @@
+*.md
+*.json
+*.bat
+*.lock
+*.toml
+LICENSE
+tools/
+tests/
+tickets/
+.claude/
+.idea/
+.venv/
+graphify-out/
+claude-plans/
