@@ -4,11 +4,20 @@
   },
   "command_check_scripts": [
     "graphify_update.bat",
+    "analyze_changed_and_new_files.bat",
+    "analyze_code.bat",
+    "analyze_code_config.bat",
+    "analyze_code_config.example.bat",
     "run_tests.bat"
   ],
   "analysis_commands": [
-    "tools\\run_tests.bat"
+    "tools\\run_tests.bat",
+    "tools\\analyze_changed_and_new_files.bat"
   ],
+  "analysis_command_kinds": {
+    "tools\\run_tests.bat": "test",
+    "tools\\analyze_changed_and_new_files.bat": "code_quality"
+  },
   "analysis_commands_seen": {
     "scripts": [
       "run_tests.bat"
@@ -18,6 +27,9 @@
   "analysis_command_states": {
     "tools\\run_tests.bat": {
       "test": "green"
+    },
+    "tools\\analyze_changed_and_new_files.bat": {
+      "code_quality": "green"
     }
   },
   "analysis_code_quality_answered": true
