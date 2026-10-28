@@ -6,6 +6,14 @@ Shutdown after a set amount of minutes or hours of idle time.
 
 IdleShutdown is a Python script that monitors system idle time and automatically shuts down your computer after a specified period. It displays a GUI window with a countdown timer showing the remaining time until shutdown.
 
+## Download
+
+Windows installer: see the [GitHub Releases](https://github.com/BenjaminKobjolke/IdleShutdown/releases).
+The installed app stores its settings in `%APPDATA%\IdleShutdown\settings.json`.
+
+Maintainers: how to build and publish a release is described in
+[docs/CREATE_NEW_RELEASE.md](docs/CREATE_NEW_RELEASE.md).
+
 ## Requirements
 
 - [uv](https://docs.astral.sh/uv/)

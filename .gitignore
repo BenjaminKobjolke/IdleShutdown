@@ -173,3 +173,11 @@ tools/analyze_code_config.bat
 .reasonix/
 coding-rules.json
 .claude/
+
+# Release build output and local release state
+!IdleShutdown.spec
+releases/
+tools/config.bat
+tools/publish_settings.ini
+tools/previous_version.txt
+tools/CREATE_RELEASE_NOTES.md

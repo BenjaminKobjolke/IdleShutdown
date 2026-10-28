@@ -9,7 +9,18 @@ import tkinter as tk
 from pathlib import Path
 from tkinter import messagebox, simpledialog
 
-SETTINGS_PATH = Path(__file__).with_name("settings.json")
+from release_notes import show_release_notes
+
+FROZEN = getattr(sys, "frozen", False)
+# PyInstaller unpacks bundled data (release_notes/) into sys._MEIPASS.
+RESOURCE_DIR = Path(getattr(sys, "_MEIPASS", Path(__file__).parent))
+# The installed exe's folder is not meant for user data,
+# so a frozen build keeps settings in APPDATA.
+SETTINGS_PATH = (
+    Path(os.environ["APPDATA"]) / "IdleShutdown" / "settings.json"
+    if FROZEN
+    else Path(__file__).with_name("settings.json")
+)
 
 
 # Define a structure for the last input info (for Windows)
@@ -82,11 +93,19 @@ def load_duration(path: Path = SETTINGS_PATH) -> str | None:
             return None
         parse_time(duration)
         return duration
-    except (OSError, UnicodeError, json.JSONDecodeError, KeyError, TypeError, ValueError):
+    except (
+        OSError,
+        UnicodeError,
+        json.JSONDecodeError,
+        KeyError,
+        TypeError,
+        ValueError,
+    ):
         return None
 
 
 def save_duration(duration: str, path: Path = SETTINGS_PATH) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
     with Path(path).open("w", encoding="utf-8") as settings_file:
         json.dump({"duration": duration}, settings_file)
 
@@ -124,8 +143,9 @@ def main():
             print(error)
             sys.exit(1)
 
-    # Relaunch using pythonw.exe if not already running with it.
-    if "pythonw.exe" not in sys.executable.lower():
+    # Relaunch using pythonw.exe if not already running with it;
+    # the frozen exe has no console.
+    if not FROZEN and "pythonw.exe" not in sys.executable.lower():
         command = [
             str(Path(sys.executable).with_name("pythonw.exe")),
             __file__,
@@ -147,7 +167,8 @@ def main():
         save_duration(duration)
         messagebox.showinfo(
             "Idle shutdown",
-            f"{duration} will now be used as the default. Use 'Change duration' in the countdown window to change it.",
+            f"{duration} will now be used as the default. "
+            "Use 'Change duration' in the countdown window to change it.",
             parent=root,
         )
     wait_time = parse_time(duration)
@@ -172,6 +193,11 @@ def main():
             restart_countdown(parse_time(new_duration))
 
     tk.Button(root, text="Change duration", command=change_duration).pack()
+    tk.Button(
+        root,
+        text="Release notes",
+        command=lambda: show_release_notes(root, RESOURCE_DIR / "release_notes"),
+    ).pack(pady=(5, 10))
 
     def show_window():
         root.deiconify()  # Show the root window

@@ -1,0 +1,11 @@
+{
+  "version": "0.1.0",
+  "build": 1,
+  "date": "2026-10-28",
+  "title": "First Windows release",
+  "notes": [
+    "IdleShutdown is now available as a Windows installer.",
+    "The idle duration is saved as the default and can be changed in the countdown window.",
+    "New Release notes button in the countdown window."
+  ]
+}

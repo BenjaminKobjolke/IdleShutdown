@@ -33,6 +33,14 @@ def test_save_duration_then_load_duration(tmp_path) -> None:
     assert load_duration(path) == "30m"
 
 
+def test_save_duration_creates_missing_folder(tmp_path) -> None:
+    path = tmp_path / "IdleShutdown" / "settings.json"
+
+    save_duration("2h", path)
+
+    assert load_duration(path) == "2h"
+
+
 def test_load_duration_returns_none_for_missing_file(tmp_path) -> None:
     assert load_duration(tmp_path / "missing.json") is None
 
