@@ -1,7 +1,7 @@
 @echo off
-REM Build a signed release installer for the current label (tools\version_get.bat).
-REM tools\release_create.bat bumps the build counter before calling this; run
-REM tools\build_increment.bat first when building by hand.
+REM Build a signed release installer for the current version (tools\version_get.bat).
+REM tools\release_create.bat bumps the version before calling this; run
+REM tools\version_increment.bat first when building by hand.
 REM On success: releases\windows\IdleShutdown_v<label>.exe, its stable-name copy
 REM IdleShutdownSetup.exe (the FTP and GitHub asset) and release_version.txt holding the
 REM completed label; publish_release.bat ships that build, not the current source label.
@@ -18,11 +18,7 @@ if errorlevel 1 (
 )
 
 for /f "usebackq delims=" %%I in (`call "%~dp0version_get.bat"`) do set "LABEL=%%I"
-for /f "tokens=1,2 delims=_" %%A in ("%LABEL%") do (
-    set "VERSION=%%A"
-    set "BUILD=%%B"
-)
-if not defined BUILD (
+if not defined LABEL (
     echo [build_release] Could not read the release label; aborting.
     exit /b 1
 )
@@ -55,7 +51,7 @@ if errorlevel 1 exit /b 1
 
 if not exist "%OUTDIR%" mkdir "%OUTDIR%"
 set "INSTALLER=%OUTDIR%\IdleShutdown_v%LABEL%.exe"
-"%MAKENSIS%" /DVERSION=%VERSION% /DBUILD=%BUILD% /DSRCDIR="%PROJECT_ROOT%\dist\IdleShutdown" /DOUTFILE="%INSTALLER%" "%PROJECT_ROOT%\installer\setup.nsi"
+"%MAKENSIS%" /DVERSION=%LABEL% /DSRCDIR="%PROJECT_ROOT%\dist\IdleShutdown" /DOUTFILE="%INSTALLER%" "%PROJECT_ROOT%\installer\setup.nsi"
 if errorlevel 1 (
     echo [build_release] Installer build failed; aborting.
     exit /b 1

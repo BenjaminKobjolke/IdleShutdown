@@ -2,11 +2,11 @@
 REM Upload the installer of the last COMPLETED build of tools\build_release.bat to
 REM the website via release-tool. build_release already signed it ([PreSigning] off).
 REM
-REM   %1  previous ONLINE label: names the remote archive folder versions\<label>\.
+REM   %1  previous ONLINE version: names the remote archive folder versions\<version>\.
 REM       Default: tools\previous_version.txt (written by tools\release_create.bat).
-REM   %2  label of the build to ship (retry an older build, e.g. 0.1.0_4).
+REM   %2  version of the build to ship (retry an older build, e.g. 0.1.4).
 REM       Default: releases\windows\release_version.txt (written by build_release).
-REM Never derived from the source version: the counter may have moved on since.
+REM Never derived from the source version: it may have been bumped since.
 setlocal
 if not exist "%~dp0publish_settings.ini" (
     echo [publish_release] Missing %~dp0publish_settings.ini - copy publish_settings_example.ini.

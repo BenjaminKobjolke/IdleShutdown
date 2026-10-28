@@ -1,10 +1,12 @@
 # Creating a New Release
 
-A release is identified by the label **`<version>_<build>`**, e.g. `0.1.0_1`:
-- `version` (semver) — `pyproject.toml` `[project] version`, bumped by hand for
-  feature or breaking changes.
-- `build` (integer) — `build_version.txt` at the project root. It holds the last
-  shipped build and never resets across versions (`0` = nothing shipped yet).
+A release is identified by its version **`<major>.<minor>.<patch>`**, e.g. `0.1.1`.
+The `pyproject.toml` `[project] version` holds the **last shipped** version; each
+release bumps its last segment (`0.1.0` -> `0.1.1` -> `0.1.2`). There is no separate
+build number.
+
+To move to a new minor or major line, set the version by hand after a release
+(e.g. `0.2.0`); the next release then ships `0.2.1`.
 
 ## One-command release (normal way)
 
@@ -12,16 +14,16 @@ A release is identified by the label **`<version>_<build>`**, e.g. `0.1.0_1`:
 tools\release_create.bat
 ```
 
-Configured by `tools/release_create.ini`, run by `release-tool create`
-(`RELEASE_TOOL_DIR` in `tools\config.bat`). It:
+Configured by `tools/release_create.ini` (`versioning = semver`), run by
+`release-tool create` (`RELEASE_TOOL_DIR` in `tools\config.bat`). It:
 
-1. bumps the build counter (`tools\build_increment.bat`) — the only bump per release,
-2. writes `release_notes/<label>/en.json` if it is missing,
-3. runs `tools\build_release.bat` (rolls the counter back with
-   `tools\build_decrement.bat` if the build fails),
+1. bumps the version (`tools\version_increment.bat`) — the only bump per release,
+2. writes `release_notes/<version>/en.json` if it is missing,
+3. runs `tools\build_release.bat` (rolls the version back with
+   `tools\version_decrement.bat` if the build fails),
 4. asks **Publish to Website?** — runs `tools\publish_release.bat` (FTP upload),
-5. asks **Commit, tag and push?** — commit `RELEASE (idle-shutdown): <label>`, tag `<label>`,
-6. asks **Create GitHub Release?** — `gh release create <label>` with
+5. asks **Commit, tag and push?** — commit `RELEASE (idle-shutdown): <version>`, tag `<version>`,
+6. asks **Create GitHub Release?** — `gh release create <version>` with
    `releases/windows/IdleShutdownSetup.exe` attached (needs `gh auth login`).
 
 Add `--dry-run` to preview everything without running it.
@@ -33,25 +35,23 @@ Local, gitignored files a fresh clone needs:
   credentials come from the `workflow-tools.com - apps` profile in
   `release-tool\ftp_profiles.ini`.
 
-## 1. Version & build number
+## 1. Version
 
 ```bat
-tools\version_get.bat       :: prints <version>_<build>
-tools\build_get.bat         :: prints the build number
-tools\build_increment.bat   :: bump build before a release
-tools\build_decrement.bat   :: undo
+tools\version_get.bat         :: prints the version, e.g. 0.1.1
+tools\version_increment.bat   :: bump the last segment before a release
+tools\version_decrement.bat   :: undo
 ```
 
-All four call `tools/release/build_number.py`.
+All three call `tools/release/version_number.py`.
 
 ## 2. Release notes + en.json
 
-Create `release_notes/<version>_<build>/en.json`. The release text is the `notes` array:
+Create `release_notes/<version>/en.json`. The release text is the `notes` array:
 
 ```json
 {
-  "version": "0.1.0",
-  "build": 1,
+  "version": "0.1.1",
   "date": "YYYY-MM-DD",
   "title": "Short headline",
   "notes": ["First change", "Second change"]
@@ -59,12 +59,13 @@ Create `release_notes/<version>_<build>/en.json`. The release text is the `notes
 ```
 
 **Author only `en.json`.** The app ships English only (`english_only = true`);
-there is no translation step.
+there is no translation step. The first release lives in the older
+`release_notes/0.1.0_1/` folder; the view still reads it.
 
 ## 3. Build the release
 
 ```bat
-tools\build_increment.bat
+tools\version_increment.bat
 tools\build_release.bat
 ```
 
@@ -76,29 +77,28 @@ tools\build_release.bat
    `release-tool sign` with the `SIGNING_PROFILE` from `tools\config.bat`, default
    `xida remote` in `release-tool\signing_profiles.ini`),
 4. builds the NSIS installer (`installer\setup.nsi`) to
-   `releases\windows\IdleShutdown_v<label>.exe` and signs it,
+   `releases\windows\IdleShutdown_v<version>.exe` and signs it,
 5. copies it to the stable name `releases\windows\IdleShutdownSetup.exe` — the file
    uploaded to the website and attached to the GitHub Release. It must not be
    called `IdleShutdown.exe`: the installer closes running `IdleShutdown.exe`
    processes with `taskkill`, which would then kill the installer itself,
-6. records the completed label in `releases\windows\release_version.txt`.
+6. records the completed version in `releases\windows\release_version.txt`.
 
 ## 4. Publish
 
-`tools\publish_release.bat [previous-online-label] [label-to-ship]` uploads the
-build recorded in `release_version.txt` (not the current source label) under the
+`tools\publish_release.bat [previous-online-version] [version-to-ship]` uploads the
+build recorded in `release_version.txt` (not the current source version) under the
 stable name to `/downloads/idle-shutdown/`; the previous remote file is archived
-to `versions/<previous-label>/`. Signing is already done, so `[PreSigning]` is off.
+to `versions/<previous-version>/`. Signing is already done, so `[PreSigning]` is off.
 
 Retry publishing an existing build without rebuilding or bumping:
 
 ```bat
-tools\publish_release.bat 0.1.0_1 0.1.0_2
+tools\publish_release.bat 0.1.1 0.1.2
 ```
 
 ## 5. In-app Release notes view
 
 The **Release notes** button in the countdown window (`main.py`) opens
-`release_notes.py` `show_release_notes`: newest release first (sorted by build),
-**Older**/**Newer** buttons to page through, and "No release notes available."
-when none are bundled.
+`release_notes.py` `show_release_notes`: newest version first, **Older**/**Newer**
+buttons to page through, and "No release notes available." when none are bundled.

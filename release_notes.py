@@ -11,10 +11,13 @@ NOTES_FILE_NAME = "en.json"
 @dataclass(frozen=True)
 class ReleaseNote:
     version: str
-    build: int
     date: str
     title: str
     notes: list[str]
+
+
+def _version_key(version: str) -> tuple[int, ...]:
+    return tuple(int(part) for part in version.split("."))
 
 
 def load_release_notes(notes_dir: Path) -> list[ReleaseNote]:
@@ -22,15 +25,14 @@ def load_release_notes(notes_dir: Path) -> list[ReleaseNote]:
     for path in notes_dir.glob(f"*/{NOTES_FILE_NAME}"):
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
-            releases.append(
-                ReleaseNote(
-                    version=str(data["version"]),
-                    build=int(data["build"]),
-                    date=str(data["date"]),
-                    title=str(data["title"]),
-                    notes=[str(note) for note in data["notes"]],
-                )
+            release = ReleaseNote(
+                version=str(data["version"]),
+                date=str(data["date"]),
+                title=str(data["title"]),
+                notes=[str(note) for note in data["notes"]],
             )
+            _version_key(release.version)  # reject a non-numeric version here
+            releases.append(release)
         except (
             OSError,
             UnicodeError,
@@ -40,14 +42,14 @@ def load_release_notes(notes_dir: Path) -> list[ReleaseNote]:
             ValueError,
         ):
             continue  # one broken release must not hide the others
-    # The build counter never resets across versions, so it alone orders releases.
-    return sorted(releases, key=lambda release: release.build, reverse=True)
+    return sorted(
+        releases, key=lambda release: _version_key(release.version), reverse=True
+    )
 
 
 def format_release_note(release: ReleaseNote) -> str:
     bullets = "\n".join(f"- {note}" for note in release.notes)
-    header = f"{release.version} (build {release.build}) - {release.date}"
-    return f"{header}\n{release.title}\n\n{bullets}"
+    return f"{release.version} - {release.date}\n{release.title}\n\n{bullets}"
 
 
 def show_release_notes(parent: tk.Misc, notes_dir: Path) -> None:

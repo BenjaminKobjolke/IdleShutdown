@@ -1,7 +1,7 @@
 ; IdleShutdown - Windows installer.
 ;
-; Built by tools\build_release.bat, which passes VERSION, BUILD, SRCDIR and
-; OUTFILE as /D defines. The bat is the single place that knows the release label.
+; Built by tools\build_release.bat, which passes VERSION, SRCDIR and OUTFILE
+; as /D defines. The bat is the single place that knows the release version.
 
 !ifndef VERSION
   !error "VERSION not defined - build via tools\build_release.bat, not makensis directly"
@@ -11,7 +11,6 @@
 !define EXENAME   "IdleShutdown.exe"
 !define COMPANY   "XIDA GmbH"
 !define REGKEY    "Software\Microsoft\Windows\CurrentVersion\Uninstall\IdleShutdown"
-!define LABEL     "${VERSION}_${BUILD}"
 
 Name "${APPNAME}"
 OutFile "${OUTFILE}"
@@ -23,11 +22,12 @@ RequestExecutionLevel user
 InstallDir "$LOCALAPPDATA\IdleShutdown"
 InstallDirRegKey HKCU "${REGKEY}" "InstallLocation"
 
-VIProductVersion "${VERSION}.${BUILD}"
+; VIProductVersion needs four numeric parts; the semver version has three.
+VIProductVersion "${VERSION}.0"
 VIAddVersionKey "ProductName"     "${APPNAME}"
 VIAddVersionKey "CompanyName"     "${COMPANY}"
 VIAddVersionKey "FileDescription" "${APPNAME} Setup"
-VIAddVersionKey "FileVersion"     "${LABEL}"
+VIAddVersionKey "FileVersion"     "${VERSION}"
 VIAddVersionKey "LegalCopyright"  "${COMPANY}"
 
 !include "MUI2.nsh"
@@ -58,7 +58,7 @@ Section "${APPNAME}" SEC_APP
   WriteUninstaller "$INSTDIR\Uninstall.exe"
 
   WriteRegStr HKCU "${REGKEY}" "DisplayName"     "${APPNAME}"
-  WriteRegStr HKCU "${REGKEY}" "DisplayVersion"  "${LABEL}"
+  WriteRegStr HKCU "${REGKEY}" "DisplayVersion"  "${VERSION}"
   WriteRegStr HKCU "${REGKEY}" "Publisher"       "${COMPANY}"
   WriteRegStr HKCU "${REGKEY}" "DisplayIcon"     "$INSTDIR\${EXENAME}"
   WriteRegStr HKCU "${REGKEY}" "InstallLocation" "$INSTDIR"
