@@ -1,0 +1,9 @@
+{
+  "version": "0.1.0",
+  "build": 2,
+  "date": "2026-10-28",
+  "title": "Improved release downloads",
+  "notes": [
+    "The Windows installer download is now more reliable."
+  ]
+}

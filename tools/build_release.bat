@@ -3,7 +3,7 @@ REM Build a signed release installer for the current label (tools\version_get.ba
 REM tools\release_create.bat bumps the build counter before calling this; run
 REM tools\build_increment.bat first when building by hand.
 REM On success: releases\windows\IdleShutdown_v<label>.exe, its stable-name copy
-REM IdleShutdown.exe (the FTP and GitHub asset) and release_version.txt holding the
+REM IdleShutdownSetup.exe (the FTP and GitHub asset) and release_version.txt holding the
 REM completed label; publish_release.bat ships that build, not the current source label.
 setlocal
 for %%I in ("%~dp0..") do set "PROJECT_ROOT=%%~fI"

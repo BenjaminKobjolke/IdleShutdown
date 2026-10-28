@@ -22,7 +22,7 @@ Configured by `tools/release_create.ini`, run by `release-tool create`
 4. asks **Publish to Website?** — runs `tools\publish_release.bat` (FTP upload),
 5. asks **Commit, tag and push?** — commit `RELEASE (idle-shutdown): <label>`, tag `<label>`,
 6. asks **Create GitHub Release?** — `gh release create <label>` with
-   `releases/windows/IdleShutdown.exe` attached (needs `gh auth login`).
+   `releases/windows/IdleShutdownSetup.exe` attached (needs `gh auth login`).
 
 Add `--dry-run` to preview everything without running it.
 
@@ -77,8 +77,10 @@ tools\build_release.bat
    `xida remote` in `release-tool\signing_profiles.ini`),
 4. builds the NSIS installer (`installer\setup.nsi`) to
    `releases\windows\IdleShutdown_v<label>.exe` and signs it,
-5. copies it to the stable name `releases\windows\IdleShutdown.exe` — the file
-   uploaded to the website and attached to the GitHub Release,
+5. copies it to the stable name `releases\windows\IdleShutdownSetup.exe` — the file
+   uploaded to the website and attached to the GitHub Release. It must not be
+   called `IdleShutdown.exe`: the installer closes running `IdleShutdown.exe`
+   processes with `taskkill`, which would then kill the installer itself,
 6. records the completed label in `releases\windows\release_version.txt`.
 
 ## 4. Publish

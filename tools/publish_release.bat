@@ -38,10 +38,10 @@ echo [publish_release] Shipping %LABEL% ^(previous online: %PREV%^)
 
 REM Upload under a stable filename (constant download URL); the versioned file
 REM stays local as the version stamp. release-tool archives the previous remote
-REM IdleShutdown.exe into versions\<PREV>\ before replacing it.
+REM IdleShutdownSetup.exe into versions\<PREV>\ before replacing it.
 call "%~dp0stage_installer.bat" "%LABEL%"
 if errorlevel 1 exit /b 1
-set "ARTIFACT=%~dp0..\releases\windows\IdleShutdown.exe"
+set "ARTIFACT=%~dp0..\releases\windows\IdleShutdownSetup.exe"
 
 cd /d "%RELEASE_TOOL_DIR%"
 call uv run python -m release_tool "%ARTIFACT%" "%~dp0publish_settings.ini" --previous-version "%PREV%" --verbose
