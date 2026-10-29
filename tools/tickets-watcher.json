@@ -3,17 +3,27 @@
     "TICKETS_WATCHER_COMMANDS.md": 3
   },
   "command_check_scripts": [
-    "graphify_update.bat",
     "analyze_changed_and_new_files.bat",
     "analyze_code.bat",
     "analyze_code_config.bat",
     "analyze_code_config.example.bat",
-    "run_tests.bat"
+    "build_exe.bat",
+    "build_release.bat",
+    "config.bat",
+    "config_example.bat",
+    "graphify_update.bat",
+    "publish_release.bat",
+    "release_create.bat",
+    "run_tests.bat",
+    "sign_exe.bat",
+    "stage_installer.bat",
+    "version_decrement.bat",
+    "version_get.bat",
+    "version_increment.bat"
   ],
   "analysis_commands": [
     "tools\\run_tests.bat",
-    "tools\\analyze_changed_and_new_files.bat",
-    "tools\\analyze_code.bat"
+    "tools\\analyze_changed_and_new_files.bat"
   ],
   "analysis_command_kinds": {
     "tools\\run_tests.bat": "test",
@@ -35,6 +45,9 @@
       "test": "green"
     },
     "tools\\analyze_changed_and_new_files.bat": {
+      "code_quality": "green"
+    },
+    "tools\\analyze_code.bat": {
       "code_quality": "green"
     }
   },
