@@ -4,3 +4,4 @@ REM Checkout of https://github.com/BenjaminKobjolke release-tool (run `uv sync` 
 set "RELEASE_TOOL_DIR=D:\GIT\BenjaminKobjolke\release-tool"
 REM Section of release-tool\signing_profiles.ini used by tools\sign_exe.bat.
 set "SIGNING_PROFILE=xida remote"
+exit /b 0
